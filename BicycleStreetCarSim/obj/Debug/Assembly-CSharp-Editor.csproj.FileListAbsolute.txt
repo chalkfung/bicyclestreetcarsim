@@ -1,0 +1,2 @@
+D:\GitHub\bicyclestreetcarsim\BicycleStreetCarSim\obj\Debug\Assembly-CSharp-Editor.csprojAssemblyReference.cache
+D:\GitHub\bicyclestreetcarsim\BicycleStreetCarSim\obj\Debug\Assembly-CSharp-Editor.csproj.CoreCompileInputs.cache

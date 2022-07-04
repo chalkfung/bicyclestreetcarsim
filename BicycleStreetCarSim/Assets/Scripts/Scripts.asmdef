@@ -1,0 +1,16 @@
+{
+    "name": "Scripts",
+    "references": [
+        "RainMaker",
+        "NavMeshComponents",
+        "Unity.TextMeshPro"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
