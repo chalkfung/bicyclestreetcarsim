@@ -6,8 +6,55 @@ namespace Capstone
     {
         public SelectionPanel selectionPanel = default;
         public UnityEngine.UI.Button addJunctionButton = default;
+        public UnityEngine.UI.Button addStreetCarButton = default;
+        public UnityEngine.UI.Button addStreetCarStartButton = default;
+        public UnityEngine.UI.Button addStreetCarWaypointButton = default;
+        public UnityEngine.UI.Button addStreetCarWaypointEnd = default;
+        public UnityEngine.UI.Button cancelButton = default;
         [SerializeField] private Transform planeTransform = default;
         [SerializeField] private GameObject junctionPrefab = default;
+        [SerializeField] private GameObject streetCarStopPrefab = default;
+        private EditorStates editorState = default;
+        private EditorStates EditorState
+        {
+            get
+            {
+                return editorState;
+            }
+            set
+            {
+                if(selectionPanel != null)
+                {
+                    switch (value)
+                    {
+                        case EditorStates.Default:
+                            selectionPanel.gameObject.SetActive(false);
+                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            break;
+                        case EditorStates.AddJunction:
+                            selectionPanel.gameObject.SetActive(true);
+                            break;
+                        case EditorStates.AddStreetCarStop:
+                            selectionPanel.gameObject.SetActive(true);
+                            break;
+                        
+                        default:
+                            break;
+                    }
+                }
+                editorState = value;
+            }
+        }
+        enum EditorStates
+        {
+            Default,
+            AddJunction,
+            AddStreetCarStop,
+            AddStreetCarStart,
+            AddStreetCarWaypoint,
+            AddStreetCarEnd
+        }
         private void Start()
         {
             if(selectionPanel != null)
@@ -21,29 +68,57 @@ namespace Capstone
             {
                 addJunctionButton.onClick.AddListener(OnAddJunctionButton);
             }
-            if(selectionPanel != null)
+            if (addStreetCarButton != null)
+            {
+                addStreetCarButton.onClick.AddListener(OnAddStreetCarStopButton);
+            }
+            if (addStreetCarStartButton != null)
+            {
+                addStreetCarStartButton.onClick.AddListener(OnAddJunctionButton);
+            }
+            if (addStreetCarWaypointButton != null)
+            {
+                addStreetCarWaypointButton.onClick.AddListener(OnAddStreetCarStopButton);
+            }
+            if (addStreetCarWaypointEnd != null)
+            {
+                addStreetCarWaypointEnd.onClick.AddListener(OnAddStreetCarStopButton);
+            }
+            if(cancelButton != null)
+            {
+                cancelButton.onClick.AddListener(OnCancelButton);
+            }
+            if (selectionPanel != null)
             {
                 selectionPanel.SelectionEndDrag += OnDragSelectionEnd;
             }
+            EditorState = EditorStates.Default;
         }
         private void OnDisable()
         {
+            if(selectionPanel)
+            {
+                selectionPanel.SelectionEndDrag -= OnDragSelectionEnd;
+            }
             if (addJunctionButton != null)
             {
                 addJunctionButton.onClick.RemoveListener(OnAddJunctionButton);
-                selectionPanel.SelectionEndDrag -= OnDragSelectionEnd;
+            }
+            if (addStreetCarButton != null)
+            {
+                addStreetCarButton.onClick.AddListener(OnAddStreetCarStopButton);
             }
         }
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Vector3 screenPoint = Input.mousePosition;
-                //screenPoint.z = Camera.main.transform.position.y - planeTransform.position.y;
-                //Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPoint);
-                Debug.Log("ScreenPoint: " + screenPoint);
-            }
+            //if (Input.GetMouseButtonDown(0))
+            //{
+            //    Vector3 screenPoint = Input.mousePosition;
+            //    //screenPoint.z = Camera.main.transform.position.y - planeTransform.position.y;
+            //    //Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPoint);
+            //    Debug.Log("ScreenPoint: " + screenPoint);
+            //}
             //if (Input.GetMouseButtonUp(0))
             //{
             //    if (selectionPanel != null)
@@ -55,15 +130,22 @@ namespace Capstone
 
         void OnDragSelectionEnd(object source, EventArgs args)
         {
-            SelectionPanel.SelectionPanelEventArgs selectionArgs = args as SelectionPanel.SelectionPanelEventArgs;
-            if(selectionArgs != null)
+            if (args is SelectionPanel.SelectionPanelEventArgs selectionArgs)
             {
-                SpawnTrafficJunctionCube(selectionArgs);
+                switch (EditorState)
+                {
+                    case EditorStates.AddJunction:
+                        SpawnTrafficJunctionCube(selectionArgs);
+                        break;
+                    case EditorStates.AddStreetCarStop:
+                        SpawnStreetCarStop(selectionArgs);
+                        break;
+                    default:
+                        break;
+                }
+                
             }
-            if(selectionPanel != null)
-            {
-                selectionPanel.gameObject.SetActive(false);
-            }
+            EditorState = EditorStates.Default;
         }
 
         void SpawnTrafficJunctionCube(SelectionPanel.SelectionPanelEventArgs selectionArgs)
@@ -83,12 +165,35 @@ namespace Capstone
             junctionGO.transform.localScale = new Vector3(junctionWidth, 1.0f, junctionHeight);
         }
 
+        void SpawnStreetCarStop(SelectionPanel.SelectionPanelEventArgs selectionArgs)
+        {
+            float screenPointZ = Camera.main.transform.position.y - planeTransform.position.y;
+            Vector3 startPos = selectionArgs.startPos;
+            Vector3 endPos = selectionArgs.endPos;
+            startPos.z = endPos.z = screenPointZ;
+            Vector3 startWorldPos = Camera.main.ScreenToWorldPoint(startPos);
+            Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(endPos);
+            float width = Math.Abs(endWorldPos.x - startWorldPos.x);
+            float height = Math.Abs(endWorldPos.z - startWorldPos.z);
+            Vector3 centrePoint = new Vector3((startWorldPos.x + endWorldPos.x) / 2, 1.0f, (startWorldPos.z + endWorldPos.z) / 2);
+            GameObject stop = Instantiate(streetCarStopPrefab);
+            stop.transform.position = centrePoint;
+            stop.transform.eulerAngles = new Vector3(0.0f, selectionArgs.cameraYAngle, 0.0f);
+            stop.transform.localScale = new Vector3(width, 1.0f, height);
+        }
+
         void OnAddJunctionButton()
         {
-            if(selectionPanel != null)
-            {
-                selectionPanel.gameObject.SetActive(true);
-            }
+            EditorState = EditorStates.AddJunction;
+        }
+
+        void OnAddStreetCarStopButton()
+        {
+            EditorState = EditorStates.AddStreetCarStop;
+        }
+        void OnCancelButton()
+        {
+            EditorState = EditorStates.Default;
         }
     }
 }
