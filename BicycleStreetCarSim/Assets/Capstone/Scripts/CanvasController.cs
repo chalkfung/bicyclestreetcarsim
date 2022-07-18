@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
-namespace Capstone
+using System.Collections.Generic;
+using System.Linq;
+namespace Capstone.Scripts
 {
     public class CanvasController : MonoBehaviour
     {
@@ -13,15 +15,22 @@ namespace Capstone
         public UnityEngine.UI.Button addStreetCarWaypointEnd = default;
         public UnityEngine.UI.Button cancelButton = default;
         public TMPro.TMP_InputField streetCarRouteInputField = default;
+        public TMPro.TMP_InputField streetCarRouteScheduleInputField = default;
         [SerializeField] private Transform planeTransform = default;
         [SerializeField] private GameObject junctionPrefab = default;
         [SerializeField] private GameObject streetCarStopPrefab = default;
-        bool mouseReleased = true;
+        [SerializeField] private GameObject streetCarWaypointStartPrefab = default;
+        [SerializeField] private GameObject streetCarWaypointPrefab = default;
+        [SerializeField] private GameObject streetCarWaypointEndPrefab = default;
+        private StreetCarWaypoint lastWaypointReference = default;
+        private String routeName = default;
+        private List<int> currentRouteSchedule = default;
+        private bool mouseReleased = true;
+        
 
         private void Awake()
         {
             // If there is an instance, and it's not me, delete myself.
-
             if (Instance != null && Instance != this)
             {
                 Destroy(this);
@@ -45,6 +54,13 @@ namespace Capstone
                     switch (value)
                     {
                         case EditorStates.Default:
+                            if (streetCarRouteInputField)
+                                streetCarRouteInputField.text = "";
+                            if (streetCarRouteScheduleInputField)
+                                streetCarRouteScheduleInputField.text = "";
+                            routeName = "";
+                            currentRouteSchedule = null;
+                            lastWaypointReference = null;
                             addJunctionButton.gameObject.SetActive(true);
                             addStreetCarStopButton.gameObject.SetActive(true);
                             addStreetCarRouteButton.gameObject.SetActive(true);
@@ -53,6 +69,7 @@ namespace Capstone
                             addStreetCarWaypointEnd.gameObject.SetActive(false);
                             cancelButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
                             break;
                         case EditorStates.AddJunction:
                             selectionPanel.gameObject.SetActive(true);
@@ -62,6 +79,7 @@ namespace Capstone
                             addStreetCarWaypointEnd.gameObject.SetActive(false);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
                             break;
                         case EditorStates.AddStreetCarStop:
                             selectionPanel.gameObject.SetActive(true);
@@ -71,9 +89,11 @@ namespace Capstone
                             addStreetCarRouteButton.gameObject.SetActive(false);
                             addStreetCarWaypointEnd.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
                             break;
                         case EditorStates.PendingStreetCarRouteDetails:
                             streetCarRouteInputField.gameObject.SetActive(true);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(true);
                             cancelButton.gameObject.SetActive(true);
                             addJunctionButton.gameObject.SetActive(false);
                             addStreetCarWaypointButton.gameObject.SetActive(false);
@@ -81,8 +101,20 @@ namespace Capstone
                             addStreetCarWaypointEnd.gameObject.SetActive(false);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             break;
+                        case EditorStates.AddStreetCarStart:
+                            streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            cancelButton.gameObject.SetActive(true);
+                            addJunctionButton.gameObject.SetActive(false);
+                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addStreetCarRouteButton.gameObject.SetActive(false);
+                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addStreetCarStopButton.gameObject.SetActive(false);
+                            mouseReleased = true;
+                            break;
                         case EditorStates.AddStreetCarRoute:
                             streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
                             cancelButton.gameObject.SetActive(true);
                             addJunctionButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
@@ -95,12 +127,16 @@ namespace Capstone
                             addStreetCarWaypointButton.gameObject.SetActive(false);
                             addStreetCarWaypointEnd.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            mouseReleased = true;
                             break;
                         case EditorStates.AddStreetCarEnd:
                             cancelButton.gameObject.SetActive(true);
                             addStreetCarWaypointEnd.gameObject.SetActive(false);
                             addStreetCarWaypointButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
+                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            mouseReleased = true;
                             break;
                         default:
                             break;
@@ -115,6 +151,7 @@ namespace Capstone
             AddJunction,
             AddStreetCarStop,
             AddStreetCarRoute,
+            AddStreetCarStart,
             AddStreetCarWaypoint,
             AddStreetCarEnd,
             PendingStreetCarRouteDetails
@@ -148,9 +185,9 @@ namespace Capstone
             {
                 addStreetCarWaypointEnd.onClick.AddListener(OnAddStreetCarEndButton);
             }
-            if(streetCarRouteInputField != null)
+            if(streetCarRouteScheduleInputField != null)
             {
-                streetCarRouteInputField.onSubmit.AddListener(OnStreetCarInputFieldEnter);
+                streetCarRouteScheduleInputField.onSubmit.AddListener(OnStreetCarInputFieldEnter);
             }
             if(cancelButton != null)
             {
@@ -180,15 +217,59 @@ namespace Capstone
 
         private void Update()
         {
-            if(EditorState == EditorStates.AddStreetCarEnd || EditorState == EditorStates.AddStreetCarWaypoint)
+            if( EditorState == EditorStates.AddStreetCarStart || EditorState == EditorStates.AddStreetCarEnd || EditorState == EditorStates.AddStreetCarWaypoint)
             {
                 if (Input.GetMouseButtonDown(0) && mouseReleased)
                 {
-                    Vector3 screenPoint = Input.mousePosition;
-                    screenPoint.z = Camera.main.transform.position.y - planeTransform.position.y;
-                    Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPoint);
-                    Debug.Log("ScreenPoint: " + screenPoint);
+                    Vector3 worldPos = ScreenToWorldPos(Input.mousePosition);
                     mouseReleased = !mouseReleased;
+                    switch(EditorState)
+                    {
+                        case EditorStates.AddStreetCarStart:
+                            //Spawn StartPoint and pass in parameters
+                            GameObject startWaypoint = Instantiate(streetCarWaypointStartPrefab);
+                            startWaypoint.transform.position = worldPos;
+                            StreetCarWaypointStart startComponent = startWaypoint.GetComponent<StreetCarWaypointStart>();
+                            if (startComponent)
+                            {
+                                startComponent.routeName = routeName;
+                                startComponent.scheduleList = currentRouteSchedule;
+                            }
+                            EditorState = EditorStates.AddStreetCarRoute;
+                            break;
+                        case EditorStates.AddStreetCarWaypoint:
+                            //Spawn waypoint and pass in parameters
+                            GameObject waypoint = Instantiate(streetCarWaypointPrefab);
+                            waypoint.transform.position = worldPos;
+                            StreetCarWaypoint waypointComponent = waypoint.GetComponent<StreetCarWaypoint>();
+                            if (waypointComponent)
+                            {
+                                waypointComponent.routeName = routeName;
+                                if (lastWaypointReference)
+                                {
+                                    lastWaypointReference.nextWaypoint = waypointComponent;
+                                }
+                            }
+                            EditorState = EditorStates.AddStreetCarRoute;
+                            break;
+                        case EditorStates.AddStreetCarEnd:
+                            //Spawn EndPoint and pass in parameters
+                            GameObject endWaypoint = Instantiate(streetCarWaypointEndPrefab);
+                            endWaypoint.transform.position = worldPos;
+                            StreetCarWaypoint endwWaypointComponent = endWaypoint.GetComponent<StreetCarWaypoint>();
+                            if (endwWaypointComponent)
+                            {
+                                endwWaypointComponent.routeName = routeName;
+                                if (lastWaypointReference)
+                                {
+                                    lastWaypointReference.nextWaypoint = endwWaypointComponent;
+                                }
+                            }
+                            EditorState = EditorStates.Default;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             //if (Input.GetMouseButtonUp(0))
@@ -291,7 +372,19 @@ namespace Capstone
         }
         void OnStreetCarInputFieldEnter(string input)
         {
-            EditorState = EditorStates.AddStreetCarRoute;
+            if (streetCarRouteInputField)
+            {
+                routeName = streetCarRouteInputField.text;
+            }
+            String[] timings = input.Split(',');
+            currentRouteSchedule = timings.Select(int.Parse).ToList();
+            EditorState = EditorStates.AddStreetCarStart;
+        }
+
+        Vector3 ScreenToWorldPos(Vector3 screenPos)
+        {
+            screenPos.z = Camera.main.transform.position.y - planeTransform.position.y;
+            return Camera.main.ScreenToWorldPoint(screenPos);
         }
     }
 }

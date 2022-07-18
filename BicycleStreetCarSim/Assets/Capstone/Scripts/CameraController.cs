@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Capstone
+namespace Capstone.Scripts
 {
     public class CameraController : MonoBehaviour
     {
@@ -19,7 +19,7 @@ namespace Capstone
                 motion = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
                 if (cameraTransform != null)
                 {
-                    cameraTransform.Translate(motion * speed * Time.deltaTime);
+                    cameraTransform.Translate(motion * (speed * Time.deltaTime));
                     Vector3 rotateAngles = cameraTransform.rotation.eulerAngles;
                     if (Input.GetKey(KeyCode.Q))
                     {

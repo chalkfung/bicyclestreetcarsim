@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 479198648968493124}
   - component: {fileID: 479198648968493125}
   - component: {fileID: 479198648968493126}
+  - component: {fileID: 5047089634668436323}
   m_Layer: 0
   m_Name: StreetCarStartWaypoint
   m_TagString: workerHighlight
@@ -49,7 +50,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 84c5ee4fd835ee149ad3d10048cd9e5b, type: 2}
+  - {fileID: 2100000, guid: c18d973f70ab42f4d8db085742871442, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -77,3 +78,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 479198648968493127}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &5047089634668436323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479198648968493127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42aaadb374214884b89b7fdefbc9409b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scheduleList: 
