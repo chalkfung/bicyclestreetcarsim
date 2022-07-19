@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Capstone.Scripts;
 using UnityEngine;
 
 namespace Capstone
@@ -11,6 +13,8 @@ namespace Capstone
         private Transform leftIndicator = default;
         private Transform rightIndicator = default;
         private JunctionState junctionState = default;
+        public float repeatRateInSeconds = 5.0f;
+        private float timer = 0.0f;
         enum JunctionState
         {
             TopBottom,
@@ -24,7 +28,23 @@ namespace Capstone
             leftIndicator = this.transform.Find("LeftTrafficIndicator");
             rightIndicator = this.transform.Find("RightTrafficIndicator");
             junctionState = JunctionState.TopBottom;
-            InvokeRepeating("ChangeTrafficLights", 0, 5.0f);
+            ChangeTrafficLights();
+        }
+
+        private void Update()
+        {
+            if (GameController.Instance.IsPlaying)
+            {
+                if (timer < repeatRateInSeconds)
+                {
+                    timer += Time.deltaTime;
+                }
+                else
+                {
+                    timer = 0.0f;
+                    ChangeTrafficLights();
+                }
+            }
         }
 
         void ChangeTrafficLights()
