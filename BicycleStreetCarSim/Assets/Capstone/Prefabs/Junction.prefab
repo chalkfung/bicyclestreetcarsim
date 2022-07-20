@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4886690168771799379}
   - component: {fileID: 3549046647311523424}
   - component: {fileID: 812648161827535096}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightTrafficIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 1483620546687322417}
   - component: {fileID: 1483620546687322418}
   - component: {fileID: 8088790169624496813}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Junction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,6 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12b141024cc4d2c478b552e39b0695fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  repeatRateInSeconds: 5
 --- !u!1 &2384186525114218271
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +229,7 @@ GameObject:
   - component: {fileID: 6569057568067138360}
   - component: {fileID: 20610871196626489}
   - component: {fileID: 8992212509220970352}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TopTrafficIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +320,7 @@ GameObject:
   - component: {fileID: 71130599412110608}
   - component: {fileID: 4780637179279582914}
   - component: {fileID: 7152527057988013595}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BottomTrafficIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +411,7 @@ GameObject:
   - component: {fileID: 3944086344900388987}
   - component: {fileID: 6601809641864256345}
   - component: {fileID: 7302421440196187965}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftTrafficIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}

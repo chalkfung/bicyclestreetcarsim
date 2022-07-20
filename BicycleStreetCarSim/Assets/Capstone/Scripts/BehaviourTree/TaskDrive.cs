@@ -6,14 +6,12 @@ namespace Capstone.Scripts.BehaviourTree
     {
         private Transform transform = default;
         private Transform[] waypoints = default;
-        private float speed = default;
         private int currentWaypointIndex = 0;
         
-        public TaskDrive(Transform transform, Transform[] waypoints, float speed)
+        public TaskDrive(Transform transform, Transform[] waypoints)
         {
             this.transform = transform;
             this.waypoints = waypoints;
-            this.speed = speed;
         }
         
         public override NodeState Evaluate()
@@ -32,7 +30,7 @@ namespace Capstone.Scripts.BehaviourTree
             }
             else
             {
-                transform.position = Vector3.MoveTowards(transform.position, nextWaypoint.position, this.speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, nextWaypoint.position, StreetCarBehaviourTree.speed * Time.deltaTime);
                 transform.LookAt(nextWaypoint.position);
             }
     
