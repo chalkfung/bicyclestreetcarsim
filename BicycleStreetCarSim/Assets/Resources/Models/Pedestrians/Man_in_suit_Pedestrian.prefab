@@ -2597,8 +2597,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5913043123334319710}
   - component: {fileID: 5913043123327423734}
-  - component: {fileID: 5913043121793296478}
-  - component: {fileID: 6074077082472266415}
   - component: {fileID: 5852456205354867346}
   - component: {fileID: 438254585534590477}
   m_Layer: 9
@@ -2643,47 +2641,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!195 &5913043121793296478
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5913043123334804236}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.3
-  m_Speed: 1.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 2
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: -0.075
-  m_WalkableMask: 1
-  m_ObstacleAvoidanceType: 4
---- !u!114 &6074077082472266415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5913043123334804236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4efc69cea918336408ff50f4d9e6d8d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkingInRoadPercentage: 0.01
-  partialPathFallbackLocationDistance: 5
-  maxSpeed: 5
-  minSpeed: 1
-  probabilityOfRunning: 0.1
-  isUsingEvacuationBehaviour: 0
-  isShooterAgent: 0
 --- !u!136 &5852456205354867346
 CapsuleCollider:
   m_ObjectHideFlags: 0

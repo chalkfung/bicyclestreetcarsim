@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 479198648968493125}
   - component: {fileID: 479198648968493126}
   - component: {fileID: 2019500798826040191}
-  m_Layer: 0
+  - component: {fileID: 5467991277331946179}
+  m_Layer: 11
   m_Name: StreetCarWaypoint
   m_TagString: workerHighlight
   m_Icon: {fileID: 0}
@@ -90,3 +91,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe45c72d2f6c043929949f75df6652ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &5467991277331946179
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479198648968493127}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

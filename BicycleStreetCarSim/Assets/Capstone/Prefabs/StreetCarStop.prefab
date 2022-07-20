@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1858458251332060373}
   - component: {fileID: 1858458251332060394}
   - component: {fileID: 1858458251332060395}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: StreetCarStop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

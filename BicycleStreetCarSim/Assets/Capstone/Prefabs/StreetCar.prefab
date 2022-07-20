@@ -773,6 +773,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextWaypoints: []
+  pedestrianPrefab: {fileID: 6143272784243353730, guid: 12367c6f5ec7a704bb33723c22445942,
+    type: 3}
 --- !u!1 &6982467957323702741
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,14 +14,28 @@ namespace Capstone.Scripts.BehaviourTree
         public override NodeState Evaluate()
         {
             Transform target = (Transform)GetData("target");
-            
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                target.position,
-                0.0f);
-            transform.LookAt(target.position);
 
-            state = NodeState.Running;
+            if (target != null)
+            {
+                if (target.GetComponent<MeshRenderer>().material.color == Color.red)
+                {
+                    transform.position = Vector3.MoveTowards(
+                        transform.position,
+                        target.position,
+                        0.0f);
+                    transform.LookAt(target.position);
+                    state = NodeState.Running;
+                    return state;
+                }
+                else
+                {
+                    ClearData("target");
+                    state = NodeState.Success;
+                    return state;
+                }
+            }
+            ClearData("target");
+            state = NodeState.Success;
             return state;
         }
     }
