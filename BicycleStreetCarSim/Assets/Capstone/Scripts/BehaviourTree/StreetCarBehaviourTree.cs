@@ -6,7 +6,7 @@ namespace Capstone.Scripts.BehaviourTree
     public class StreetCarBehaviourTree : Tree
     {
         public UnityEngine.Transform[] nextWaypoints = default;
-        public static GameObject pedestrianPrefab = default;
+        public GameObject pedestrianPrefab = default;
         public static int alightingPedestrian = 5;
         public static int boardingPedestrian = 5;
         public static float speed = 2f;
@@ -19,7 +19,8 @@ namespace Capstone.Scripts.BehaviourTree
                 new Sequence(new List<Node>()
                     {
                         new CheckArrivedStreetCarStop(transform),
-                        new TaskWaitPedestrianAlight(transform)
+                        new TaskWaitPedestrianAlight(transform, pedestrianPrefab),
+                        new TaskLeaveStreetCarStop(transform, nextWaypoints)
                     }
                 ),
                 new Sequence(new List<Node>

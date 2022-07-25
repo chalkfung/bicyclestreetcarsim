@@ -13,19 +13,24 @@ namespace Capstone.Scripts
         public UnityEngine.UI.Button addJunctionButton = default;
         public UnityEngine.UI.Button addStreetCarStopButton = default;
         public UnityEngine.UI.Button addStreetCarRouteButton = default;
-        public UnityEngine.UI.Button addStreetCarWaypointButton = default;
-        public UnityEngine.UI.Button addStreetCarWaypointEnd = default;
+        public UnityEngine.UI.Button addWaypointButton = default;
+        public UnityEngine.UI.Button addWaypointEnd = default;
+        public UnityEngine.UI.Button addBicycleRouteButton = default;
         public UnityEngine.UI.Button cancelButton = default;
         public TMPro.TMP_InputField streetCarRouteInputField = default;
-        public TMPro.TMP_InputField streetCarRouteScheduleInputField = default;
+        public TMPro.TMP_InputField routeScheduleInputField = default;
         [SerializeField] private Transform planeTransform = default;
         [SerializeField] private GameObject junctionPrefab = default;
         [SerializeField] private GameObject streetCarStopPrefab = default;
         [SerializeField] private GameObject streetCarWaypointStartPrefab = default;
         [SerializeField] private GameObject streetCarWaypointPrefab = default;
         [SerializeField] private GameObject streetCarWaypointEndPrefab = default;
-        private List<StreetCarWaypoint> editingReferences = default;
-        private StreetCarWaypoint lastWaypointReference = default;
+        [SerializeField] private GameObject bicycleWaypointStartPrefab = default;
+        [SerializeField] private GameObject bicycleWaypointPrefab = default;
+        [SerializeField] private GameObject bicycleWaypointEndPrefab = default;
+        [SerializeField] private GameObject pedestrianPrefab = default;
+        private List<Waypoint> editingReferences = default;
+        private Waypoint lastWaypointReference = default;
         private String routeName = default;
         private List<int> currentRouteSchedule = default;
         private bool mouseReleased = true;
@@ -59,8 +64,8 @@ namespace Capstone.Scripts
                         case EditorStates.Default:
                             if (streetCarRouteInputField)
                                 streetCarRouteInputField.text = "";
-                            if (streetCarRouteScheduleInputField)
-                                streetCarRouteScheduleInputField.text = "";
+                            if (routeScheduleInputField)
+                                routeScheduleInputField.text = "";
                             routeName = "";
                             currentRouteSchedule = null;
                             lastWaypointReference = null;
@@ -69,96 +74,120 @@ namespace Capstone.Scripts
                             addJunctionButton.gameObject.SetActive(true);
                             addStreetCarStopButton.gameObject.SetActive(true);
                             addStreetCarRouteButton.gameObject.SetActive(true);
+                            addBicycleRouteButton.gameObject.SetActive(true);
                             selectionPanel.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
                             cancelButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(true);
                             break;
                         case EditorStates.AddJunction:
                             selectionPanel.gameObject.SetActive(true);
                             cancelButton.gameObject.SetActive(true);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
                             break;
                         case EditorStates.AddStreetCarStop:
                             selectionPanel.gameObject.SetActive(true);
                             cancelButton.gameObject.SetActive(true);
                             addJunctionButton.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
                             break;
                         case EditorStates.PendingStreetCarRouteDetails:
                             streetCarRouteInputField.gameObject.SetActive(true);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(true);
+                            routeScheduleInputField.gameObject.SetActive(true);
                             cancelButton.gameObject.SetActive(true);
                             addJunctionButton.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
                             break;
+                        case EditorStates.AddBicycleStart:
                         case EditorStates.AddStreetCarStart:
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             cancelButton.gameObject.SetActive(true);
                             addJunctionButton.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
                             mouseReleased = true;
                             break;
+                        case EditorStates.AddBicycleRoute:
                         case EditorStates.AddStreetCarRoute:
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             cancelButton.gameObject.SetActive(true);
                             addJunctionButton.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(true);
-                            addStreetCarWaypointEnd.gameObject.SetActive(true);
+                            addWaypointButton.gameObject.SetActive(true);
+                            addWaypointEnd.gameObject.SetActive(true);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
                             break;
+                        case EditorStates.AddBicycleWaypoint:
                         case EditorStates.AddStreetCarWaypoint:
                             cancelButton.gameObject.SetActive(true);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
                             mouseReleased = true;
                             break;
+                        case EditorStates.AddBicycleEnd:
                         case EditorStates.AddStreetCarEnd:
                             cancelButton.gameObject.SetActive(true);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             startSimulationButton.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
                             mouseReleased = true;
+                            break; 
+                        case EditorStates.PendingBicycleRouteDetails:
+                            streetCarRouteInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(true);
+                            cancelButton.gameObject.SetActive(true);
+                            addJunctionButton.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
+                            addBicycleRouteButton.gameObject.SetActive(false);
+                            addStreetCarRouteButton.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
+                            addStreetCarStopButton.gameObject.SetActive(false);
+                            startSimulationButton.gameObject.SetActive(false);
                             break;
                         case EditorStates.Simulation:
                             GameController.Instance.IsPlaying = true;
                             startSimulationButton.gameObject.SetActive(true);
                             cancelButton.gameObject.SetActive(false);
-                            addStreetCarWaypointEnd.gameObject.SetActive(false);
-                            addStreetCarWaypointButton.gameObject.SetActive(false);
+                            addWaypointEnd.gameObject.SetActive(false);
+                            addWaypointButton.gameObject.SetActive(false);
                             streetCarRouteInputField.gameObject.SetActive(false);
-                            streetCarRouteScheduleInputField.gameObject.SetActive(false);
+                            routeScheduleInputField.gameObject.SetActive(false);
                             addJunctionButton.gameObject.SetActive(false);
                             addStreetCarStopButton.gameObject.SetActive(false);
                             addStreetCarRouteButton.gameObject.SetActive(false);
@@ -180,7 +209,12 @@ namespace Capstone.Scripts
             AddStreetCarStart,
             AddStreetCarWaypoint,
             AddStreetCarEnd,
-            PendingStreetCarRouteDetails
+            PendingStreetCarRouteDetails,
+            PendingBicycleRouteDetails,
+            AddBicycleRoute,
+            AddBicycleStart,
+            AddBicycleWaypoint,
+            AddBicycleEnd
         }
         private void Start()
         {
@@ -203,17 +237,22 @@ namespace Capstone.Scripts
             {
                 addStreetCarRouteButton.onClick.AddListener(OnAddStreetCarRoute);
             }
-            if (addStreetCarWaypointButton != null)
+
+            if (addBicycleRouteButton != null)
             {
-                addStreetCarWaypointButton.onClick.AddListener(OnAddStreetCarWaypointButton);
+                addBicycleRouteButton.onClick.AddListener(OnAddBicycleRoute);
             }
-            if (addStreetCarWaypointEnd != null)
+            if (addWaypointButton != null)
             {
-                addStreetCarWaypointEnd.onClick.AddListener(OnAddStreetCarEndButton);
+                addWaypointButton.onClick.AddListener(OnAddWaypointButton);
             }
-            if(streetCarRouteScheduleInputField != null)
+            if (addWaypointEnd != null)
             {
-                streetCarRouteScheduleInputField.onSubmit.AddListener(OnStreetCarInputFieldEnter);
+                addWaypointEnd.onClick.AddListener(OnAddStreetCarEndButton);
+            }
+            if(routeScheduleInputField != null)
+            {
+                routeScheduleInputField.onSubmit.AddListener(OnInputFieldsEnter);
             }
 
             if (startSimulationButton)
@@ -261,23 +300,24 @@ namespace Capstone.Scripts
             {
                 addStreetCarRouteButton.onClick.RemoveListener(OnAddStreetCarRoute);
             }
-            if (addStreetCarWaypointButton != null)
+            if (addWaypointButton != null)
             {
-                addStreetCarWaypointButton.onClick.RemoveListener(OnAddStreetCarWaypointButton);
+                addWaypointButton.onClick.RemoveListener(OnAddWaypointButton);
             }
-            if (addStreetCarWaypointEnd != null)
+            if (addWaypointEnd != null)
             {
-                addStreetCarWaypointEnd.onClick.RemoveListener(OnAddStreetCarEndButton);
+                addWaypointEnd.onClick.RemoveListener(OnAddStreetCarEndButton);
             }
-            if(streetCarRouteScheduleInputField != null)
+            if(routeScheduleInputField != null)
             {
-                streetCarRouteScheduleInputField.onSubmit.RemoveListener(OnStreetCarInputFieldEnter);
+                routeScheduleInputField.onSubmit.RemoveListener(OnInputFieldsEnter);
             }
         }
 
         private void Update()
         {
-            if( EditorState == EditorStates.AddStreetCarStart || EditorState == EditorStates.AddStreetCarEnd || EditorState == EditorStates.AddStreetCarWaypoint)
+            if( EditorState == EditorStates.AddStreetCarStart || EditorState == EditorStates.AddStreetCarEnd || EditorState == EditorStates.AddStreetCarWaypoint ||
+                EditorState == EditorStates.AddBicycleStart || EditorState == EditorStates.AddBicycleEnd || EditorState == EditorStates.AddBicycleWaypoint)
             {
                 if (Input.GetMouseButtonDown(0) && mouseReleased)
                 {
@@ -285,28 +325,37 @@ namespace Capstone.Scripts
                     mouseReleased = !mouseReleased;
                     switch(EditorState)
                     {
+                        case EditorStates.AddBicycleStart:
                         case EditorStates.AddStreetCarStart:
                             //Spawn StartPoint and pass in parameters
-                            GameObject startWaypoint = Instantiate(streetCarWaypointStartPrefab);
+                            GameObject startWaypoint = EditorState == EditorStates.AddStreetCarStart 
+                                ? Instantiate(streetCarWaypointStartPrefab) 
+                                : Instantiate(bicycleWaypointStartPrefab);
                             startWaypoint.transform.position = worldPos;
-                            StreetCarWaypointStart startComponent = startWaypoint.GetComponent<StreetCarWaypointStart>();
+                            WaypointStart startComponent = startWaypoint.GetComponent<WaypointStart>();
                             if (startComponent)
                             {
                                 startComponent.routeName = routeName;
                                 startComponent.scheduleList = currentRouteSchedule;
+                                startComponent.pedestrianPrefab = pedestrianPrefab;
                                 startComponent.FormatSchedules();
                                 lastWaypointReference = startComponent;
                             }
 
-                            editingReferences = new List<StreetCarWaypoint>();
+                            editingReferences = new List<Waypoint>();
                             editingReferences.Add(startComponent);
-                            EditorState = EditorStates.AddStreetCarRoute;
+                            EditorState = EditorState == EditorStates.AddStreetCarStart 
+                                ? EditorStates.AddStreetCarRoute 
+                                : EditorStates.AddBicycleRoute;
                             break;
+                        case EditorStates.AddBicycleWaypoint:
                         case EditorStates.AddStreetCarWaypoint:
                             //Spawn waypoint and pass in parameters
-                            GameObject waypoint = Instantiate(streetCarWaypointPrefab);
+                            GameObject waypoint = EditorState == EditorStates.AddStreetCarWaypoint 
+                                ? Instantiate(streetCarWaypointPrefab) 
+                                : Instantiate(bicycleWaypointPrefab);
                             waypoint.transform.position = worldPos;
-                            StreetCarWaypoint waypointComponent = waypoint.GetComponent<StreetCarWaypoint>();
+                            Waypoint waypointComponent = waypoint.GetComponent<Waypoint>();
                             if (waypointComponent)
                             {
                                 if (lastWaypointReference)
@@ -316,13 +365,18 @@ namespace Capstone.Scripts
                                 }
                             }
                             editingReferences.Add(waypointComponent);
-                            EditorState = EditorStates.AddStreetCarRoute;
+                            EditorState = EditorState == EditorStates.AddStreetCarWaypoint 
+                                ? EditorStates.AddStreetCarRoute 
+                                : EditorStates.AddBicycleRoute;
                             break;
+                        case EditorStates.AddBicycleEnd:
                         case EditorStates.AddStreetCarEnd:
                             //Spawn EndPoint and pass in parameters
-                            GameObject endWaypoint = Instantiate(streetCarWaypointEndPrefab);
+                            GameObject endWaypoint = EditorState == EditorStates.AddStreetCarEnd 
+                                ? Instantiate(streetCarWaypointEndPrefab) 
+                                : Instantiate(bicycleWaypointEndPrefab);
                             endWaypoint.transform.position = worldPos;
-                            StreetCarWaypoint endWaypointComponent = endWaypoint.GetComponent<StreetCarWaypoint>();
+                            Waypoint endWaypointComponent = endWaypoint.GetComponent<Waypoint>();
                             if (endWaypointComponent)
                             {
                                 endWaypointComponent.routeName = routeName;
@@ -411,18 +465,23 @@ namespace Capstone.Scripts
         {
             EditorState = EditorStates.AddStreetCarStop;
         }
-        void OnAddStreetCarWaypointButton()
+        void OnAddWaypointButton()
         {
-            EditorState = EditorStates.AddStreetCarWaypoint;
+            EditorState = EditorState == EditorStates.AddStreetCarRoute ? EditorStates.AddStreetCarWaypoint : EditorStates.AddBicycleWaypoint;
         }
         void OnAddStreetCarEndButton()
         {
-            EditorState = EditorStates.AddStreetCarEnd;
+            EditorState = EditorState == EditorStates.AddStreetCarRoute ? EditorStates.AddStreetCarEnd : EditorStates.AddBicycleEnd;
         }
         void OnCancelButton()
         {
             switch(EditorState)
             {
+                case EditorStates.AddBicycleWaypoint:
+                case EditorStates.AddBicycleEnd:
+                    mouseReleased = true;
+                    EditorState = EditorStates.AddBicycleRoute;
+                    break;
                 case EditorStates.AddStreetCarWaypoint:
                 case EditorStates.AddStreetCarEnd:
                     mouseReleased = true;
@@ -431,7 +490,7 @@ namespace Capstone.Scripts
                 default:
                     if (editingReferences != null)
                     {
-                        foreach(StreetCarWaypoint waypoint in editingReferences)
+                        foreach(Waypoint waypoint in editingReferences)
                         {
                             DestroyImmediate(waypoint.gameObject);
                         }
@@ -444,15 +503,22 @@ namespace Capstone.Scripts
         {
             EditorState = EditorStates.PendingStreetCarRouteDetails;
         }
-        void OnStreetCarInputFieldEnter(string input)
+        
+        void OnAddBicycleRoute()
         {
-            if (streetCarRouteInputField)
+            EditorState = EditorStates.PendingBicycleRouteDetails;
+        }
+        void OnInputFieldsEnter(string input)
+        {
+            if (streetCarRouteInputField && EditorState == EditorStates.PendingStreetCarRouteDetails)
             {
                 routeName = streetCarRouteInputField.text;
             }
             String[] timings = input.Split(',');
             currentRouteSchedule = timings.Select(int.Parse).ToList();
-            EditorState = EditorStates.AddStreetCarStart;
+            EditorState = (EditorState == EditorStates.PendingStreetCarRouteDetails)
+                ? EditorStates.AddStreetCarStart
+                : EditorStates.AddBicycleStart;
         }
 
         void OnSimulationButton()

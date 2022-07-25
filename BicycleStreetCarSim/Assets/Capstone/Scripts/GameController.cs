@@ -8,7 +8,9 @@ namespace Capstone.Scripts
         private bool isPlaying = false;
 
         public GameObject StreetCarPrefab = default;
-        // 1 sec in real time is 4 min in game
+
+        public GameObject BicyclePrefab = default;
+        // 1 sec in real time is 15 seconds in game
         private float timeScale = 15.0f; 
         private float timer = 0.0f;
         private void Awake()

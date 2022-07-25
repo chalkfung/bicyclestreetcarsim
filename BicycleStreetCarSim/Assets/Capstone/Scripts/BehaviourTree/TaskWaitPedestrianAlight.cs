@@ -5,11 +5,12 @@ namespace Capstone.Scripts.BehaviourTree
     {
         private Transform transform;
         private int counter = 0;
-        private static int pedestrianMask = 13;
-
-        public TaskWaitPedestrianAlight(Transform transform)
+        private static int pedestrianMask = 1 << 13;
+        private GameObject pedestrianPrefab = default;
+        public TaskWaitPedestrianAlight(Transform transform, GameObject pedestrianPrefab)
         {
             this.transform = transform;
+            this.pedestrianPrefab = pedestrianPrefab;
         }
 
         public override NodeState Evaluate()
@@ -21,11 +22,11 @@ namespace Capstone.Scripts.BehaviourTree
                 if (counter < StreetCarBehaviourTree.alightingPedestrian)
                 {
                     Collider[] pedestrianCollider = Physics.OverlapSphere(transform.position, 1.0f, pedestrianMask);
-                    if (pedestrianCollider.Length == 1)
+                    if (pedestrianCollider.Length < 1)
                     {
-                        if (StreetCarBehaviourTree.pedestrianPrefab != null)
+                        if (pedestrianPrefab != null)
                         {
-                            GameObject pedestrian = StreetCarBehaviourTree.Instantiate(StreetCarBehaviourTree.pedestrianPrefab);
+                            GameObject pedestrian = StreetCarBehaviourTree.Instantiate(pedestrianPrefab);
                             Transform[] spawnPoints = target.GetComponentsInChildren<Transform>();
                             Transform closest = spawnPoints.Length > 0 ? spawnPoints[0] : null;
                             float distance = float.MaxValue;
@@ -39,7 +40,9 @@ namespace Capstone.Scripts.BehaviourTree
 
                             }
 
+                            pedestrian.transform.position = transform.position;
                             pedestrian.GetComponent<PedestrianBehaviourTree>().endPoint = closest;
+                            
                             ++counter;
                         }
                     }
@@ -47,20 +50,19 @@ namespace Capstone.Scripts.BehaviourTree
                         transform.position,
                         target.position,
                         0.0f);
+                    parent.SetData("alighting", counter);
                     state = NodeState.Running;
                     return state;
                 }
                 else
                 {
                     counter = 0;
-                    ClearData("target");
                     state = NodeState.Success;
                     return state;
                 }
             }
 
             counter = 0;
-            ClearData("target");
             state = NodeState.Success;
             return state;
         }

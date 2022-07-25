@@ -17,12 +17,14 @@ namespace Capstone.Scripts.BehaviourTree
         {
             if (Vector3.Distance(transform.position, endPoint.position) < 0.01f)
             {
-                transform.GetComponent<Animator>().SetBool("BasicMotions@Idle01", true);
-                transform.GetComponent<Animator>().SetBool("BasicMotions@Walk01", false);
+                //transform.GetComponent<Animator>().SetBool("BasicMotions@Idle01", true);
+                //transform.GetComponent<Animator>().SetBool("BasicMotions@Walk01", false);
+                transform.position = Vector3.MoveTowards(transform.position, endPoint.position,0);
+                transform.LookAt(endPoint.position);
                 return NodeState.Success;
             }
             
-            transform.GetComponent<Animator>().SetBool("BasicMotions@Walk01", true);
+            //transform.GetComponent<Animator>().SetBool("BasicMotions@Walk01", true);
             
             transform.position = Vector3.MoveTowards(transform.position, endPoint.position, PedestrianBehaviourTree.speed * Time.deltaTime);
                 transform.LookAt(endPoint.position);

@@ -18,25 +18,23 @@ namespace Capstone.Scripts.BehaviourTree
             if (target == null)
             {
                 Collider[] waypointCollider = Physics.OverlapSphere(
-                    transform.position, 1.0f, waypointMask);
+                    transform.position, 0.1f, waypointMask);
                 
                 Collider[] streetCarStopCollider = Physics.OverlapSphere(
-                    transform.position, 0.0f, streetCarStopMask);
-                
+                    transform.position, 1.0f, streetCarStopMask);
+
                 if (waypointCollider.Length > 0 
                     && streetCarStopCollider.Length > 0)
                 {
-                    parent.parent.SetData("target", streetCarStopCollider[0].transform);
+                    parent.SetData("target", streetCarStopCollider[0].transform);
                     state = NodeState.Success;
                     return state;
                 }
-                state = NodeState.Failure;
-                return state;
+
             }
 
-            state = NodeState.Success;
+            state = NodeState.Failure;
             return state;
-
         }
     }
 }

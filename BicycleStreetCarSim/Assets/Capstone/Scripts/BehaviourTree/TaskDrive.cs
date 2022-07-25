@@ -17,15 +17,17 @@ namespace Capstone.Scripts.BehaviourTree
         public override NodeState Evaluate()
         {
             Transform nextWaypoint = waypoints[currentWaypointIndex];
-            if (Vector3.Distance(transform.position, nextWaypoint.position) < 0.01f)
+            if (Vector3.Distance(transform.position, nextWaypoint.position) < 2.0f)
             {
                 if (currentWaypointIndex + 1 == waypoints.Length)
                 {
+                    //ClearData("currentWaypointIndex");
                     return NodeState.Success;
                 }
                 else
                 {
                     currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+                    parent.SetData("currentWaypointIndex", currentWaypointIndex);
                 }
             }
             else

@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/King Street West.unity
-  isLoaded: 1
-  isActive: 1
