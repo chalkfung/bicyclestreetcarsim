@@ -2545,7 +2545,7 @@ GameObject:
   - component: {fileID: 7110442549259823092}
   m_Layer: 13
   m_Name: Man_in_suit_Pedestrian
-  m_TagString: Untagged
+  m_TagString: pedestrian
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

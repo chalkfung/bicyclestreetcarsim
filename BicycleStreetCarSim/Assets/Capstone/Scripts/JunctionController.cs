@@ -13,7 +13,7 @@ namespace Capstone
         private Transform leftIndicator = default;
         private Transform rightIndicator = default;
         private JunctionState junctionState = default;
-        public float repeatRateInSeconds = 5.0f;
+        private float repeatRateInSeconds = 120.0f;
         private float timer = 0.0f;
         enum JunctionState
         {
@@ -51,7 +51,7 @@ namespace Capstone
         {
             if (topIndicator != null && bottomIndicator != null && leftIndicator != null && rightIndicator != null)
             {
-                Debug.Log("changing");
+                //Debug.Log("changing");
                 topIndicator.GetComponent<MeshRenderer>().material.color = (junctionState == JunctionState.TopBottom) ? Color.green : Color.red;
                 bottomIndicator.GetComponent<MeshRenderer>().material.color = (junctionState == JunctionState.TopBottom) ? Color.green : Color.red;
                 leftIndicator.GetComponent<MeshRenderer>().material.color = (junctionState == JunctionState.LeftRight) ? Color.green : Color.red;

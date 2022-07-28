@@ -14,7 +14,7 @@ namespace Capstone.Scripts.BehaviourTree
 
         private void Update()
         {
-            if (root != null)
+            if (root != null && GameController.Instance.IsPlaying)
             {
                 root.Evaluate();
             }

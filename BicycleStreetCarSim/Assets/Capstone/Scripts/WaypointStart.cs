@@ -19,6 +19,10 @@ namespace Capstone.Scripts
         }
         private void Update()
         {
+            if (scheduleListToSecondsFromMidnight == null)
+            {
+                FormatSchedules();
+            }
             if (scheduleListToSecondsFromMidnight != null)
             {
                 foreach (var timing in scheduleListToSecondsFromMidnight.Keys.ToList())
@@ -37,6 +41,8 @@ namespace Capstone.Scripts
                                 waypointRef = waypointRef.nextWaypoint;
                             }
 
+                            streetCar.GetComponent<StreetCarBehaviourTree>().routeName = routeName;
+                            streetCar.GetComponent<StreetCarBehaviourTree>().startTime = timing;
                             streetCar.GetComponent<StreetCarBehaviourTree>().nextWaypoints = nextWaypoints.ToArray();
                             streetCar.GetComponent<StreetCarBehaviourTree>().pedestrianPrefab = pedestrianPrefab;
                         }
@@ -66,7 +72,7 @@ namespace Capstone.Scripts
         private int scheduleToSecondsFromMidnight(int schedule)
         {
             int hours = schedule / 100;
-            int minutes = (schedule < 100) ? schedule : (hours * 100);
+            int minutes = (schedule < 100) ? schedule : (schedule - hours * 100);
             return hours * 3600 + minutes * 60;
         }
 
